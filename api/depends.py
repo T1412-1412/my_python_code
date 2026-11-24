@@ -3,7 +3,7 @@
 核心思想：无状态组件全局一份，通过依赖注入传给路由，不用每个接口都初始化
 """
 
-from rag_knowledge.kb_manager import KnowledgeBaseManager
+from rag_knowledge.kb_singleton import get_global_kb_manager
 
 from typing import Generator
 
