@@ -109,6 +109,10 @@ class Reflector:
             plan.steps = kept_steps + new_steps
             plan.replan_count += 1
             logger.info(f"🔄 第{plan.replan_count}次重规划完成，剩余{len(new_steps)}步")
+
+            # ★ 重规划成功，回到执行态
+            plan.transition("replan_ok")  # REPLANNING → EXECUTING
+
             return plan
 
         except Exception as e:
