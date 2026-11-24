@@ -446,6 +446,8 @@ class PlanAgent:
         logger.info("[FSM] COMPLETED 任务完成")
         self._plan.transition("complete")
         self._final_answer = _summarize_result(self.llm_client, self._plan)
+        # ★ 新增：把答案回写到 Plan，保证序列化/日志里能读到完整终态
+        self._plan.final_answer = self._final_answer
 
     def _handle_failed(self) -> None:
         logger.info("[FSM] FAILED 任务失败，启动优雅降级")
