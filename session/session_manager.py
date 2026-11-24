@@ -59,6 +59,9 @@ class SessionManager:
             max_sessions: int = 100,
             # 是否开启每个会话的断点快照
             enable_checkpoint: bool = True,
+            # ========== 新增：记忆策略配置 ==========
+            memory_type: str = "sliding_window",
+            memory_policy_config: MemoryPolicyConfig = None,
     ):
         """
         初始化：接受所有全局共享的无状态组件
