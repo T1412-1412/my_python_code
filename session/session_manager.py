@@ -89,7 +89,8 @@ class SessionManager:
         logger.info(
             f"会话管理器初始化完成 | "
             f"超时={session_timeout}s | 最大会话数={max_sessions} | "
-            f"断点快照={'开启' if enable_checkpoint else '关闭'}"
+            f"断点快照={'开启' if enable_checkpoint else '关闭'} | "
+            f"记忆模式={memory_type}"
         )
 
     def _create_session_memory(self, session_id: str):
