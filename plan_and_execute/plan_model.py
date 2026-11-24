@@ -120,7 +120,12 @@ class Plan:
             "fail": PlanStatus.FAILED,
             "start_replan": PlanStatus.REPLANNING,  # ★ 新增
         },
-        PlanStatus.FAILED: {"replan": PlanStatus.EXECUTING}
+        PlanStatus.REPLANNING: {
+            "replan_ok": PlanStatus.EXECUTING,  # ★ 新增
+            "replan_fail": PlanStatus.FAILED,  # ★ 新增
+        },
+        PlanStatus.FAILED: set(),
+        PlanStatus.COMPLETED: set(),
     }
 
     def transition(self, event: str) -> None:
