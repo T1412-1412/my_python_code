@@ -37,7 +37,7 @@ class Reflector:
         self.max_replan = max_replan
 
     def replan(self, plan: Plan, failed_step: Step) -> Plan:
-        """执行重规划"""
+        """执行重规划（状态机：EXECUTING → REPLANNING → EXECUTING/FAILED）"""
         # 重规划次数是否到达上限
         if plan.is_replan_exhausted(self.max_replan):
             logger.info(f"达到最大重规划次数：{self.max_replan}，重规划失败")
