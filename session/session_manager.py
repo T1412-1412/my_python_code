@@ -20,6 +20,10 @@ from memory.long_term_memory import LongTermMemory
 from utils.config_tool import agent_conf
 from utils.logger_tool import logger
 from utils.path_tool import get_abs_path
+# 新增摘要记忆相关类
+from memory.summary_memory import SummaryMemory
+from pydantic_schemas.memory_schemas import MemoryConfig
+from pydantic_schemas.memory_policy_schema import MemoryPolicyConfig
 
 
 @dataclass
