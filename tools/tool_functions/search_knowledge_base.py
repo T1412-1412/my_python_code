@@ -9,7 +9,10 @@ def search_knowledge_base(kb_name: str, query: str, top_k: int = 3) -> str:
     知识库检索工具函数：从指定知识库中查找相关内容
     返回格式化后的检索结果字符串，直接传给大模型
     """
-    results = _kb_manager.search(kb_name=kb_name, query=query, top_k=top_k)
+    # ★ 每次调用拿全局单例，和 API 层共享同一个实例和 _store_cache
+    kb_manager = get_global_kb_manager()
+
+    results = kb_manager.search(kb_name=kb_name, query=query, top_k=top_k)
     if not results:
         return f"在知识库【{kb_name}】中未找到相关内容"
 
