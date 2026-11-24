@@ -137,6 +137,9 @@ class MemoryPolicyMixin:
         消息写入前策略处理：敏感信息检测 -> 添加元数据 -> 去重，返回处理后的消息，返回None表示该消息不应存储
         在记忆类的add_message方法最开头调用
         """
+        # ★ 关键：先判 SENSITIVE 再判去重，顺序不能反
+        # 原因：若先去重，敏感消息内容会被写进 _dedup_cache，
+        #       后续相同内容的正常消息会被误判为重复而丢弃
         processed_msg = self._add_metadata(message)
         if processed_msg["metadata"]["level"] == MemoryLevel.SENSITIVE:
             return None
