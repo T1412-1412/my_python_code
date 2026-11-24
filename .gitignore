@@ -1,0 +1,32 @@
+.qoder
+.venv
+.idea
+chroma_db
+logs
+history_messages
+# --- Python 环境与缓存 ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- IDE / 工具配置 ---
+.idea/
+.vscode/
+.qoder/
+
+# --- 运行时生成的日志与数据库 ---
+logs/
+*.log
+chroma_db/
+*.sqlite3
+
+# --- Agent 运行状态数据（按需忽略）---
+
+
+# --- 敏感信息 ---
+.env
+.env.local
+*.pem

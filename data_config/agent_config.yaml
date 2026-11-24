@@ -1,0 +1,33 @@
+# 大模型基础url和模型名称
+base_url: https://ws-75ntouay5nt8xgfs.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+chat_model: qwen3.8-flash
+#base_url: https://open.bigmodel.cn/api/paas/v4
+#chat_model: GLM-4.7-Flash
+# 对应模型的tiktoken编码
+#qwen3.7-plus的tiktoken编码
+tiktoken_encoder: o200k_base
+#tiktoken_encoder: glm4
+
+# 向量模型名称
+embedding_model: text-embedding-v4
+
+# 向量维度（Qwen3-Embedding-0.6B 输出 1024 维）
+embedding_dim: 1024
+
+# ollama本地embedding
+ollama_emb_url: http://localhost:11434/v1
+ollama_emb_model: qwen3-embedding:0.6b
+
+# 召回工具TOP_K数量
+top_k: 3
+# 工具执行出错最大重试次数
+max_retry: 3
+# 线程池最大并行工作数量
+max_workers: 5
+system_prompt: "你是一个智能助手，可以调用工具获取信息来准确回答用户的问题。请先思考是否需要调用工具，信息足够时直接回答用户。"
+# agent最大循环次数
+max_cycle: 8
+# 滑动窗口上下文最大窗口大小
+max_token: 15000
+# 向量库文件夹
+chroma_db: chroma_db
