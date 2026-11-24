@@ -97,6 +97,7 @@ class SessionManager:
         """
         为单个会话创建独立的记忆实例
         每个会话的记忆都是全新的，完全隔离
+        根据 memory_type 自动选择滑动窗口 / 摘要记忆
         """
         # 共用的策略配置，两种记忆复用同一套分级规则
         policy_config = self.memory_policy_config
