@@ -117,7 +117,8 @@ class Plan:
         PlanStatus.INITIALIZED: {"start_exec": PlanStatus.EXECUTING},
         PlanStatus.EXECUTING: {
             "complete": PlanStatus.COMPLETED,
-            "fail": PlanStatus.FAILED
+            "fail": PlanStatus.FAILED,
+            "start_replan": PlanStatus.REPLANNING,  # ★ 新增
         },
         PlanStatus.FAILED: {"replan": PlanStatus.EXECUTING}
     }
