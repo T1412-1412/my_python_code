@@ -34,7 +34,7 @@ def _init_global_components() -> None:
     初始化所有全局组件
     程序启动时调用一次，懒加载模式，第一次访问才初始化
     """
-    global _llm_client, _tool_retriever, _planner, _executor, _reflector, _session_manager, _initialized, _kb_manager
+    global _llm_client, _tool_retriever, _planner, _executor, _reflector, _session_manager, _initialized
 
     if _initialized:
         return  # 已经初始化过，直接返回
