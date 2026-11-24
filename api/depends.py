@@ -27,8 +27,7 @@ _executor = None
 _reflector = None
 _session_manager = None
 _initialized = False
-# 在全局单例变量区增加
-_kb_manager = None
+
 
 def _init_global_components() -> None:
     """
