@@ -27,6 +27,7 @@ class StepStatus(str, Enum):
 class PlanStatus(str, Enum):
     INITIALIZED = "initialized" # 已初始化
     EXECUTING = "executing"     # 执行中
+    REPLANNING = "replanning"  # ★ 新增 重规划中
     COMPLETED = "completed"     # 已完成
     FAILED = "failed"           # 已失败
 
