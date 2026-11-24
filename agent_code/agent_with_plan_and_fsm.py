@@ -435,6 +435,8 @@ class PlanAgent:
         if not failed_step:
             return AgentState.FAILED
         self._plan = self.reflector.replan(self._plan, failed_step)
+
+        # ★ 加固：显式处理所有可能的返回状态，避免意外
         if self._plan.status == PlanStatus.FAILED:
             logger.info("重规划次数耗尽，进入失败终态")
             return AgentState.FAILED
