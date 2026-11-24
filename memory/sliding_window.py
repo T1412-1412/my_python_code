@@ -58,7 +58,8 @@ class SlidingWindowMemory(BaseMemory, MemoryPolicyMixin):
         """
         # 消息写入前策略处理：敏感信息检测 -> 添加元数据 -> 去重，返回处理后的消息
         policy_message = self.policy_add_message(message)
-        self._history.append(policy_message)
+        if policy_message is not None:
+            self._history.append(policy_message)
 
     def add_messages(self, messages: List[Dict]) -> None:
         """
