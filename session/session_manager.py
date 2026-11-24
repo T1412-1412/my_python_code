@@ -82,6 +82,10 @@ class SessionManager:
         # 会话注册表，核心存储，key = session_id，value = SessionInfo
         self._sessions: Dict[str, SessionInfo] = {}
 
+        # 新增：保存记忆配置
+        self.memory_type = memory_type
+        self.memory_policy_config = memory_policy_config
+
         logger.info(
             f"会话管理器初始化完成 | "
             f"超时={session_timeout}s | 最大会话数={max_sessions} | "
