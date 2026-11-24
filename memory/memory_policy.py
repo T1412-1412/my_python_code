@@ -138,8 +138,8 @@ class MemoryPolicyMixin:
         在记忆类的add_message方法最开头调用
         """
         processed_msg = self._add_metadata(message)
-        # if processed_msg["metadata"]["level"] == MemoryLevel.SENSITIVE:
-        #     return None
+        if processed_msg["metadata"]["level"] == MemoryLevel.SENSITIVE:
+            return None
         if self._is_duplicate(processed_msg):
             return None
         return processed_msg
