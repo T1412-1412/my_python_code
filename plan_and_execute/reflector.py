@@ -45,6 +45,9 @@ class Reflector:
             plan.transition("fail")
             return plan
 
+        # ★ 进入重规划状态
+        plan.transition("start_replan")  # EXECUTING → REPLANNING
+
         try:
             # 1. 拼接上下文
             done_steps = [f"{s.description}：{s.result}" for s in plan.steps if s.status == StepStatus.DONE]
