@@ -117,6 +117,6 @@ class Reflector:
 
         except Exception as e:
             logger.info(f"重规划失败：{e}")
-            # 【改动点】异常导致计划失败：EXECUTING → FAILED
-            plan.transition("fail")
+            # ★ 注意事件名是 replan_fail，不是 fail（当前状态是 REPLANNING，不是 EXECUTING）
+            plan.transition("replan_fail")  # REPLANNING → FAILED
             return plan
