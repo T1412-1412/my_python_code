@@ -4,6 +4,7 @@
 """
 
 from rag_knowledge.kb_singleton import get_global_kb_manager
+from rag_knowledge.kb_manager import KnowledgeBaseManager
 
 from typing import Generator
 
