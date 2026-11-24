@@ -65,8 +65,8 @@ def _init_global_components() -> None:
         session_timeout=1800,  # 30分钟超时
         max_sessions=100,
     )
-    # 新增：知识库管理器
-    _kb_manager = KnowledgeBaseManager()
+    # ★ 不再 new，直接触发单例初始化，保证和工具层用同一个
+    get_global_kb_manager()
 
     logger.info("全局组件初始化完成")
 
