@@ -98,8 +98,28 @@ class SessionManager:
         为单个会话创建独立的记忆实例
         每个会话的记忆都是全新的，完全隔离
         """
-        # 短期记忆，每个会话独立一份滑动窗口记忆
-        base_memory = SlidingWindowMemory()
+        # 共用的策略配置，两种记忆复用同一套分级规则
+        policy_config = self.memory_policy_config
+
+        if self.memory_type == "summary":
+            # ========== 摘要记忆模式 ==========
+            from utils.config_tool import agent_conf
+            base_memory = SummaryMemory(
+                llm_client=self.llm_client,
+                chat_model=agent_conf["chat_model"],
+                config=MemoryConfig(
+                    keep_recent_rounds=6,  # 保留最近6轮原文
+                    summary_token_threshold=8000,  # 超过8k token触发摘要
+                    max_summary_tokens=1000,  # 单条摘要最大token
+                    enable_incremental_summary=True,  # 开启增量摘要
+                ),
+                policy_config=policy_config,
+            )
+        else:
+            # ========== 默认：滑动窗口模式 ==========
+            base_memory = SlidingWindowMemory(
+                policy_config=policy_config
+            )
 
         # 长期记忆：MVP项目阶段，可以先按照会话隔离，每个会话有独立的向量库目录
         # 后面做全局知识库时，可以改成共享全局向量库
