@@ -440,8 +440,10 @@ class PlanAgent:
         if self._plan.status == PlanStatus.FAILED:
             logger.info("重规划次数耗尽，进入失败终态")
             return AgentState.FAILED
-        logger.info("重规划成功，返回执行")
-        return AgentState.EXECUTING
+        if self._plan.status == PlanStatus.EXECUTING:
+            logger.info("重规划成功，返回执行")
+            return AgentState.EXECUTING
+        raise ValueError(f"重规划后出现意外状态：{self._plan.status.value}")
 
     # ===================== 终态处理 =====================
     def _handle_completed(self) -> None:
