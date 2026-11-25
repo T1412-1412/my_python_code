@@ -77,7 +77,7 @@ def chat(
         raise HTTPException(status_code=500, detail=f"执行失败：{str(e)}")
 
 # 3. 获取会话历史
-@router.get("sessions/{session_id}/history", response_model=ApiResponse)
+@router.get("/sessions/{session_id}/history", response_model=ApiResponse)
 def get_history(
     session_id: str,
     session_manager: SessionManager = Depends(get_session_manager),
