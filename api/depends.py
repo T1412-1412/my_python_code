@@ -88,4 +88,4 @@ def get_kb_manager() -> Generator[KnowledgeBaseManager, None, None]:
     FastAPI 依赖函数：返回知识库管理器实例
     """
     _init_global_components()
-    yield _kb_manager
+    yield get_global_kb_manager()
