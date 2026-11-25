@@ -54,7 +54,7 @@ class SessionManager:
             executor: Executor,
             reflector: Reflector,
             # 会话过期时间，单位秒，默认三十分钟无活动就过期
-            session_timeout: int = 1800,
+            session_timeout: int = 36000,
             # 最大同时存在的会话数量，防止内存爆掉
             max_sessions: int = 100,
             # 是否开启每个会话的断点快照
