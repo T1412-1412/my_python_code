@@ -69,6 +69,8 @@ def _init_global_components() -> None:
     # ★ 不再 new，直接触发单例初始化，保证和工具层用同一个
     get_global_kb_manager()
 
+    _initialized = True
+
     logger.info("全局组件初始化完成")
 
 
