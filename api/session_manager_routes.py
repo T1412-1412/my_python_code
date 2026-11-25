@@ -114,7 +114,7 @@ def get_history(
         raise HTTPException(status_code=500, detail=f"获取历史失败：{str(e)}")
 
 # 4、删除会话
-@router.delete("sessions/{session_id}", response_model=ApiResponse)
+@router.delete("/sessions/{session_id}", response_model=ApiResponse)
 def delete_session(
     session_id: str,
     session_manager: SessionManager = Depends(get_session_manager),
