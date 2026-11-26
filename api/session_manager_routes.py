@@ -90,7 +90,7 @@ def get_history(
     try:
         # 从记忆中获取历史消息
         # 注意！这里泄露了业务层面的信息，路由里面不应该知道具体业务逻辑，应该额外给出获取历史消息的接口
-        history = session_info.agent.base_memory.history
+        history = agent.base_memory.history
         # 转换为标准格式，过滤掉元数据
         messages = [
             HistoryMessage(
