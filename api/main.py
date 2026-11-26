@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.knowledge_base_routes import router as knowledge_router
 from api.session_manager_routes import router as session_router
+from contextlib import asynccontextmanager
+from api.depends import _init_global_components
 from utils.logger_tool import logger
 
 
