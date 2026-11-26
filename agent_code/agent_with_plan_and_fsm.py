@@ -421,14 +421,14 @@ class PlanAgent:
             logger.info("所有步骤完成，进入成功终态")
             return AgentState.COMPLETED
 
-        # # ========== 临时中断埋点：第2步完成后强制退出 ==========
-        # # 找到已完成的步骤数量
-        # done_count = sum(1 for s in self._plan.steps if s.status == StepStatus.DONE)
-        # if done_count == 2:
-        #     logger.critical("[中断测试] 第2步完成，强制终止进程，模拟程序崩溃")
-        #     import os
-        #     os._exit(1)  # 强制退出，不走正常收尾
-        # # ======================================================
+        # ========== 临时中断埋点：第2步完成后强制退出 ==========
+        # 找到已完成的步骤数量
+        done_count = sum(1 for s in self._plan.steps if s.status == StepStatus.DONE)
+        if done_count == 2:
+            logger.critical("[中断测试] 第2步完成，强制终止进程，模拟程序崩溃")
+            import os
+            os._exit(1)  # 强制退出，不走正常收尾
+        # ======================================================
 
         failed_step = self._plan.get_failed_step()
         if failed_step:
