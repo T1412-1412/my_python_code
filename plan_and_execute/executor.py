@@ -29,6 +29,7 @@ class Executor:
         """
         拼接单个Step的上下文：system prompt + 依赖步骤信息 + 当前步骤的目标
         计划一旦复杂（5 步 + 每步结果 1000 字 = 5K 字），传给 LLM 的上下文会指数膨胀，而且大部分是当前步骤用不到的
+        设计原则：前置约束越明确，模型无效调用越少，单步收敛速度越快
         """
         # ★ 全局 system prompt，统一身份设定
         msgs = [{"role": "system", "content": agent_conf["system_prompt"]}]
