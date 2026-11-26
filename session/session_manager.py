@@ -325,6 +325,7 @@ class SessionManager:
             logger.debug(f"清理过期会话：{sid}")
 
         if expired_ids:
+            self._save_registry()  # ★ 新增：批量清理同步到磁盘
             logger.info(f"清理过期会话完成，共清理 {len(expired_ids)} 个，剩余 {len(self._sessions)} 个")
         return len(expired_ids)
 
