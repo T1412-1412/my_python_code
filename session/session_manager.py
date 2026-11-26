@@ -279,6 +279,7 @@ class SessionManager:
         if time.time() - session_info.last_active_time > self.session_timeout:
             logger.info(f"会话已过期，自动移除：{session_id}")
             self._sessions.pop(session_id, None)
+            self._save_registry()  # ★ 新增：过期删除同步到磁盘
             return None
 
         # 更新最后活跃时间
