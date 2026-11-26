@@ -42,6 +42,14 @@ class SessionInfo:
         """更新最后活跃时间，每次访问会话都调用一次"""
         self.last_active_time = time.time()
 
+    def to_meta(self) -> dict:
+        """★ 新增：只序列化元数据，绝不序列化 agent"""
+        return {
+            "session_id": self.session_id,
+            "create_time": self.create_time,
+            "last_active_time": self.last_active_time,
+        }
+
 class SessionManager:
     """
     会话管理器：全局单例，负责所有会话的创建、查询、清理
