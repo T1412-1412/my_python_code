@@ -83,8 +83,9 @@ def get_history(
     session_manager: SessionManager = Depends(get_session_manager),
 ):
     """获取指定会话的完整历史消息"""
-    session_info = session_manager.get_session(session_id)
-    if session_info is None:
+    # ★ 改用 get_agent，触发懒加载重建
+    agent = session_manager.get_agent(session_id)
+    if agent is None:
         raise HTTPException(status_code=404, detail=f"会话 {session_id} 不存在或已过期")
     try:
         # 从记忆中获取历史消息
