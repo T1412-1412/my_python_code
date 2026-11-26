@@ -27,7 +27,7 @@ app.add_middleware(
 
 # ===================== 注册路由 =====================
 app.include_router(session_router)
-app.include_router(knowledge_router)  # 新增这一行
+app.include_router(knowledge_router)
 
 
 # ===================== 根路径健康检查 =====================
