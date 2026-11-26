@@ -352,7 +352,7 @@ class SessionManager:
             except Exception as e:
                 logger.warning(f"清理会话快照失败：{e}")
 
-            self._sessions.pop(session_id)
-            logger.info(f"手动删除会话：{session_id}")
-            return True
-        return False
+        self._sessions.pop(session_id)
+        self._save_registry()  # ★ 新增：删除同步到磁盘
+        logger.info(f"手动删除会话：{session_id}")
+        return True
