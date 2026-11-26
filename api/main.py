@@ -38,13 +38,12 @@ def health_check():
 
 
 # ===================== 启动事件 =====================
-@app.on_event("startup")
-async def startup_event():
-    """服务启动时执行"""
-    logger.info("=" * 50)
-    logger.info("Agent API 服务启动成功")
-    logger.info("接口文档地址：http://127.0.0.1:8000/docs")
-    logger.info("=" * 50)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 启动时初始化全局组件，避免第一次请求冷启动
+    _init_global_components()
+    yield
+    # 关闭时可做资源清理
 
 
 @app.on_event("shutdown")
