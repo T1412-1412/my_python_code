@@ -328,21 +328,27 @@ class SessionManager:
         return len(expired_ids)
 
     def remove_session(self, session_id: str) -> bool:
-        """
-        手动删除指定会话
-        同时清理该会话的快照文件，避免残留
-        """
-        if session_id in self._sessions:
-            # 额外清理快照文件
-            agent = self._sessions[session_id].agent
-            if hasattr(agent, "snapshot_path"):
-                import os
-                if os.path.exists(agent.snapshot_path):
-                    try:
-                        os.remove(agent.snapshot_path)
-                        logger.debug(f"删除会话快照：{agent.snapshot_path}")
-                    except Exception as e:
-                        logger.warning(f"清理会话快照失败：{e}")
+        """手动删除指定会话，同时清理快照文件"""
+        if session_id not in self._sessions:
+            return False
+
+        session_info = self._sessions[session_id]
+        agent = session_info.agent
+
+        # ★ 兼容 agent=None（懒加载还没触发）：用约定路径找快照
+        if agent is not None and hasattr(agent, "snapshot_path"):
+            snapshot_path = agent.snapshot_path
+        else:
+            snapshot_path = get_abs_path(
+                f"history_messages/sessions/{session_id}/agent_snapshot.json"
+            )
+
+        if os.path.exists(snapshot_path):
+            try:
+                os.remove(snapshot_path)
+                logger.debug(f"删除会话快照：{snapshot_path}")
+            except Exception as e:
+                logger.warning(f"清理会话快照失败：{e}")
 
             self._sessions.pop(session_id)
             logger.info(f"手动删除会话：{session_id}")
