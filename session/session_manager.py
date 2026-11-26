@@ -33,7 +33,7 @@ class SessionInfo:
     所有和会话相关的数据都存在这里，统一管理
     """
     session_id: str
-    agent: PlanAgent    # 每个会话独立的 FSM Agent 实例
+    agent: Optional[PlanAgent]    # 每个会话独立的 FSM Agent 实例 ★ 改为可选，懒加载
     create_time: float = field(default_factory=time.time)
     last_active_time: float = field(default_factory=time.time)
 
