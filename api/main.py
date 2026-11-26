@@ -45,12 +45,7 @@ async def lifespan(app: FastAPI):
     yield
     # 关闭时可做资源清理
 
-app = FastAPI(
-    title="智能 Agent 服务 API",
-    description="基于 Plan-and-Execute + FSM 的智能 Agent 服务接口文档",
-    version="1.0.0",
-    lifespan=lifespan
-)
+
 
 
 if __name__ == "__main__":
