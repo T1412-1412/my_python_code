@@ -34,7 +34,7 @@ class Executor:
         # ★ 全局 system prompt，统一身份设定
         msgs = [{"role": "system", "content": agent_conf["system_prompt"]}]
 
-        # 只传当前步骤真正依赖的
+        # 只传当前步骤真正依赖的，避免无关信息干扰，减少token浪费
         dep_results = []
         for dep_id in step.depends_on:
             dep = plan.get_step(dep_id)
