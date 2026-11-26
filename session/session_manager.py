@@ -286,7 +286,11 @@ class SessionManager:
         return session_info
 
     def get_agent(self, session_id: str) -> Optional[PlanAgent]:
-        """快捷方法：根据会话id获取对应的agent实例"""
+        """
+        快捷方法：根据会话id获取对应的agent实例
+        获取 agent 实例（懒加载）
+        首次访问时从磁盘重建 agent，后续直接命中缓存
+        """
         session_info = self.get_session(session_id)
         return session_info.agent if session_info else None
 
