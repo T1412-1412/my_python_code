@@ -259,6 +259,9 @@ class SessionManager:
         session_info = SessionInfo(session_id, agent)
         self._sessions[session_id] = session_info
 
+        # ★ 新增：把新会话元数据落盘
+        self._save_registry()
+
         logger.info(f"创建新会话：{session_id}，当前总会话数：{len(self._sessions)}")
         return session_id
 
