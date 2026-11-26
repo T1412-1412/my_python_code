@@ -91,6 +91,11 @@ class SessionManager:
         # 会话注册表，核心存储，key = session_id，value = SessionInfo
         self._sessions: Dict[str, SessionInfo] = {}
 
+        # ★ 新增：registry 持久化路径
+        self._registry_path = get_abs_path("history_messages/sessions/_registry.json")
+        # ★ 新增：启动时从磁盘加载元数据（不重建 agent，毫秒级）
+        self._load_registry()
+
         # 新增：保存记忆配置
         self.memory_type = memory_type
         self.memory_policy_config = memory_policy_config
