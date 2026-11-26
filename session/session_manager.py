@@ -107,6 +107,71 @@ class SessionManager:
             f"记忆模式={memory_type}"
         )
 
+    # ===================== ★ 新增：registry 持久化 =====================
+
+    def _load_registry(self) -> None:
+        """启动时加载元数据，不创建任何 agent（毫秒级）"""
+        if not os.path.exists(self._registry_path):
+            # 首次启动或旧数据升级：扫目录生成初始 registry
+            self._migrate_legacy_sessions()
+            return
+
+        try:
+            with open(self._registry_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for sid, meta in data.items():
+                self._sessions[sid] = SessionInfo(
+                    session_id=sid,
+                    create_time=meta.get("create_time", time.time()),
+                    last_active_time=meta.get("last_active_time", time.time()),
+                    agent=None,   # ★ 懒加载：不重建 agent
+                )
+            logger.info(f"会话注册表加载完成，共 {len(self._sessions)} 个历史会话（懒加载模式）")
+        except Exception as e:
+            logger.error(f"加载会话注册表失败：{e}，将以空注册表启动")
+            self._sessions = {}
+
+    def _save_registry(self) -> None:
+        """原子写入 registry，只写元数据"""
+        try:
+            os.makedirs(os.path.dirname(self._registry_path), exist_ok=True)
+            data = {sid: info.to_meta() for sid, info in self._sessions.items()}
+            tmp_path = self._registry_path + ".tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            os.replace(tmp_path, self._registry_path)
+        except Exception as e:
+            # 持久化失败不影响内存使用，只记 warning
+            logger.warning(f"保存会话注册表失败：{e}")
+
+    def _migrate_legacy_sessions(self) -> None:
+        """首次启动兼容旧数据：扫描磁盘生成初始 registry"""
+        sessions_root = get_abs_path("history_messages/sessions")
+        if not os.path.isdir(sessions_root):
+            return
+
+        migrated = 0
+        for entry in os.listdir(sessions_root):
+            session_dir = os.path.join(sessions_root, entry)
+            # 跳过非目录和 registry 文件
+            if not os.path.isdir(session_dir) or entry.startswith("_"):
+                continue
+            # 只有包含快照的目录才算有效会话
+            if not os.path.exists(os.path.join(session_dir, "agent_snapshot.json")):
+                continue
+
+            self._sessions[entry] = SessionInfo(
+                session_id=entry,
+                create_time=os.path.getctime(session_dir),
+                last_active_time=os.path.getmtime(session_dir),
+                agent=None,
+            )
+            migrated += 1
+
+        if migrated > 0:
+            self._save_registry()
+            logger.info(f"首次迁移：扫描生成注册表，共 {migrated} 个历史会话")
+
     def _create_session_memory(self, session_id: str):
         """
         为单个会话创建独立的记忆实例
