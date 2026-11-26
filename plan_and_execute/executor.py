@@ -40,8 +40,29 @@ class Executor:
             if dep and dep.status == StepStatus.DONE and dep.result:
                 dep_results.append(f"【依赖结果 - {dep.description}】\n{dep.result}")
         if dep_results:
-            msgs.append({"role": "system", "content": "\n\n".join(dep_results)})
-        msgs.append({"role": "user", "content": f"只完成这一步：{step.description}，完成后直接输出结果"})
+            msgs.append({
+                "role": "system",
+                # 强调“真实有效、可直接引用、无需重复验证”，消除模型的验证焦虑
+                "content": "以下是已经完成的前置步骤结果，数据真实有效，可直接引用，无需重复验证：\n\n" + "\n\n".join(
+                    dep_results)
+            })
+
+            # 3. 单步执行核心约束（解决重复调用的关键！）
+            # 明确4件事：目标是什么、完成标准是什么、禁止什么行为、输出格式要求
+        step_constraint = f"""
+        你当前只需要完成下面这一个步骤，不要做额外事情：
+        【步骤目标】{step.description}
+
+        【严格执行规则】
+        1.  结果复用：同一步内已经计算出的数值、前置步骤给出的数值，直接引用即可，禁止重复计算相同的算式。
+        2.  完成标准：当步骤目标要求的所有数值都计算完成、所有结论都得出后，直接输出最终结果，不需要再调用工具验算、交叉验证。
+        3.  禁止冗余：相同参数的工具只需要调用一次，禁止无意义的重复调用、拆分重算、反复验算。
+        4.  输出格式：最终直接输出结构化的步骤结论，分点清晰，不要罗列工具调用过程，不要解释计算思路。
+
+        请开始执行这一步。
+        """
+        # 去除首尾空行，保持提示词整洁
+        msgs.append({"role": "user", "content": step_constraint.strip()})
         return msgs
 
     def execute_step(self, plan: Plan, step: Step) -> Step:
