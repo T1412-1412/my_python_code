@@ -4,7 +4,7 @@
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.knowledge_base_routes import router as knowledge_router    # 新增知识库路由
+from api.knowledge_base_routes import router as knowledge_router
 from api.session_manager_routes import router as session_router
 from utils.logger_tool import logger
 
