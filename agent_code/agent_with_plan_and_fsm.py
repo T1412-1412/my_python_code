@@ -504,6 +504,11 @@ class PlanAgent:
         # 没恢复成功，才从 INIT 开始
         if not resumed:
             self._agent_state = AgentState.INIT
+            self._plan = None
+            self._final_answer = ""
+            self._session_log = []
+            # 记忆保留历史对话，不清空；如果需要全新任务可注释下面这行
+            # self.base_memory.clear()
 
         # 主循环：从当前状态继续流转
         while self._agent_state not in (AgentState.COMPLETED, AgentState.FAILED):
