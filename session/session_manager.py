@@ -292,7 +292,21 @@ class SessionManager:
         首次访问时从磁盘重建 agent，后续直接命中缓存
         """
         session_info = self.get_session(session_id)
-        return session_info.agent if session_info else None
+        if session_info is None:
+            return None
+
+        # ★ 新增：懒加载重建 agent
+        if session_info.agent is None:
+            try:
+                logger.info(f"懒加载重建 agent：{session_id}")
+                session_info.agent = self._build_agent(session_id)
+                # 重建完成后立即刷新活跃时间
+                session_info.touch()
+            except Exception as e:
+                logger.error(f"重建 agent 失败 {session_id}：{e}")
+                return None
+
+        return session_info.agent
 
     def clean_expired(self) -> int:
         """
