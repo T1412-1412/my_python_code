@@ -502,6 +502,7 @@ class PlanAgent:
             resumed = self.load_checkpoint()
 
         # 没恢复成功，才从 INIT 开始
+        # ========== 新增：非恢复模式下，完整重置任务状态 ==========
         if not resumed:
             self._agent_state = AgentState.INIT
             self._plan = None
