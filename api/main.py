@@ -37,7 +37,7 @@ def health_check():
     return {"status": "ok", "service": "agent-service"}
 
 
-# ===================== 启动事件 =====================
+# ============ 生命周期函数：管理启动/关闭逻辑 =================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 启动时初始化全局组件，避免第一次请求冷启动
