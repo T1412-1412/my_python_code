@@ -8,6 +8,29 @@ from api.knowledge_base_routes import router as knowledge_router    # 新增知�
 from api.session_manager_routes import router as session_router
 from utils.logger_tool import logger
 
+
+# ============ 生命周期函数：管理启动/关闭逻辑 =================
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 启动时初始化全局组件，避免第一次请求冷启动
+    _init_global_components()
+
+    # ========== 关键：打印可直接点击的访问地址 ==========
+    # 用 127.0.0.1 本地回环地址，控制台可以直接点击跳转
+    # 0.0.0.0 只是监听地址，浏览器无法直接访问
+    print("\n" + "=" * 50)
+    print("🚀 Agent 服务启动成功")
+    print(f"📄 接口文档地址：http://127.0.0.1:8000/docs")
+    print(f"💓 健康检查地址：http://127.0.0.1:8000/health")
+    print("=" * 50 + "\n")
+    # ======================================================
+
+    yield  # 分界线：上面是启动逻辑，下面是关闭逻辑
+
+    # ===== 关闭阶段（停止服务前执行） =====
+    logger.info("服务正在关闭，资源清理中...")
+    # 后续可在这里加：长期记忆刷盘、会话持久化等清理逻辑
+
 # ===================== 创建 FastAPI 应用 =====================
 app = FastAPI(
     title="智能 Agent 服务 API",
