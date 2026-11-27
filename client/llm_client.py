@@ -53,9 +53,16 @@ class LLMClient:
                 stream=True
             )
             for chunk in stream:
-                delta = chunk.choices[0].delta.content
-                if delta:
-                    yield delta
+                # ========== 第一层防御：choices 非空才继续 ==========
+                if not chunk.choices:
+                    continue  # 空帧直接跳过，避免索引越界
+
+                delta = chunk.choices[0].delta
+
+                # ========== 第二层防御：content 有值才返回 ==========
+                if delta.content is not None and delta.content != "":
+                    yield delta.content
+
         except Exception as e:
             logger.error(f"流式生成失败：{e}")
             yield f"\n[生成异常：{str(e)}]"
