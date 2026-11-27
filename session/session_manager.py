@@ -356,3 +356,19 @@ class SessionManager:
         self._save_registry()  # ★ 新增：删除同步到磁盘
         logger.info(f"手动删除会话：{session_id}")
         return True
+
+    def list_sessions(self) -> list:
+        """
+        返回所有会话的基础信息（id、创建时间、最后活跃时间）
+        用于前端展示历史会话列表
+        """
+        session_list = []
+        for sid, info in self._sessions.items():
+            session_list.append({
+                "session_id": sid,
+                "create_time": info.create_time,
+                "last_active_time": info.last_active_time,
+            })
+        # 按最后活跃时间倒序，最新的排在最上面
+        session_list.sort(key=lambda x: x["last_active_time"], reverse=True)
+        return session_list
