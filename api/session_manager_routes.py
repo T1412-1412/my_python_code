@@ -130,3 +130,28 @@ def delete_session(
         message="success",
         data=None
     )
+
+# 追加流式输出路由接口
+
+@router.post("/sessions/{session_id}/chat-stream")
+def chat_stream(
+    session_id: str,
+    request: ChatRequest,
+    session_manager: SessionManager = Depends(get_session_manager),
+):
+    """最简流式接口：SSE格式，用于前端演示"""
+    agent = session_manager.get_agent(session_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail="会话不存在")
+
+    def event_generator():
+        for event in agent.run_stream(request.query, request.resume):
+            # 标准SSE格式
+            data = json.dumps({"type": event["event"], "data": event["data"]}, ensure_ascii=False)
+            yield f"data: {data}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"}
+    )
