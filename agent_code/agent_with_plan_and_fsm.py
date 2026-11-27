@@ -565,19 +565,12 @@ class PlanAgent:
 
             current_state = self._agent_state
 
-            # ===== 推送阶段状态事件 =====
-            status_text = {
-                AgentState.INIT: "初始化中",
-                AgentState.PLANNING: "任务规划中",
-                AgentState.EXECUTING: "执行计划步骤",
-                AgentState.RESULT_PROCESSING: "处理执行结果",
-                AgentState.REFLECTING: "复盘重规划中",
-            }.get(current_state, "处理中")
-            yield {"event": "status", "data": status_text}
-
-            # 执行当前状态的逻辑
-            next_state = getattr(self, handle_name)()
-            self._transition(next_state)
+            # ========== 分状态推送事件 ==========
+            if current_state == AgentState.PLANNING:
+                # 规划阶段：先推状态，执行完推完整计划
+                yield {"event": "status", "data": "任务规划中"}
+                next_state = getattr(self, handle_name)()
+                self._transition(next_state)
 
             # ===== 规划完成：推送完整计划 =====
             if current_state == AgentState.PLANNING and self._plan:
