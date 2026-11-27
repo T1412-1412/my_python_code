@@ -538,8 +538,8 @@ class PlanAgent:
     # 流式输出的run方法
     def run_stream(self, query: str, resume: bool = True):
         """
-        面试版流式运行入口
-        事件类型：status / plan / step / content / done
+        面试演示版流式运行
+        事件顺序：status(规划中) → plan(步骤清单) → status(执行第X步) → step(第X步完成) → ... → content(逐字答案) → done
         """
         self._query = query
 
