@@ -625,7 +625,17 @@ class PlanAgent:
                     ]
                     yield {"event": "plan", "data": {"steps": step_list}}
 
-        # ========== 3. 终态：流式输出最终答案 ==========
+            else:
+                # 其他状态：初始化、结果处理
+                status_text = {
+                    AgentState.INIT: "初始化中",
+                    AgentState.RESULT_PROCESSING: "处理执行结果",
+                }.get(current_state, "处理中")
+                yield {"event": "status", "data": status_text}
+                next_state = getattr(self, handle_name)()
+                self._transition(next_state)
+
+        # 3. 终态：流式输出最终答案
         if self._agent_state == AgentState.COMPLETED:
             yield {"event": "status", "data": "生成最终回答"}
 
