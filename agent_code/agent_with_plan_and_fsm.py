@@ -553,6 +553,8 @@ class PlanAgent:
             self._plan = None
             self._final_answer = ""
             self._session_log = []
+            # 记忆保留历史对话，不清空；如果需要全新任务可注释下面这行
+            # self.base_memory.clear()
 
         # ========== 2. 状态机主循环 + 事件推送 ==========
         while self._agent_state not in (AgentState.COMPLETED, AgentState.FAILED):
