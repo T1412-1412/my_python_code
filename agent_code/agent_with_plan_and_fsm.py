@@ -579,7 +579,7 @@ class PlanAgent:
             next_state = getattr(self, handle_name)()
             self._transition(next_state)
 
-            # 规划完成：推送计划
+            # ===== 规划完成：推送完整计划 =====
             if current_state == AgentState.PLANNING and self._plan:
                 # 格式化成前端易读的步骤列表
                 step_list = [
