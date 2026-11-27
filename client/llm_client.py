@@ -64,5 +64,5 @@ class LLMClient:
                     yield delta.content
 
         except Exception as e:
-            logger.error(f"流式生成失败：{e}")
+            logger.error(f"流式生成失败：{e}", exc_info=True)
             yield f"\n[生成异常：{str(e)}]"
