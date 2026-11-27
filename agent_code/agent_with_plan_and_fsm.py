@@ -565,7 +565,7 @@ class PlanAgent:
 
             current_state = self._agent_state
 
-            # 推送阶段状态
+            # ===== 推送阶段状态事件 =====
             status_text = {
                 AgentState.INIT: "初始化中",
                 AgentState.PLANNING: "任务规划中",
