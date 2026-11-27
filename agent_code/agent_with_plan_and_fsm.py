@@ -527,6 +527,83 @@ class PlanAgent:
 
         return self._finalize(self._final_answer)
 
+    # 流式输出的run方法
+    def run_stream(self, query: str, resume: bool = True):
+        """
+        面试版流式运行：只做核心事件推送
+        事件类型：status / plan / content / done
+        """
+        self._query = query
+
+        # 1. 初始化/断点恢复
+        resumed = False
+        if resume:
+            resumed = self.load_checkpoint()
+        if not resumed:
+            self._agent_state = AgentState.INIT
+
+        # 2. 状态机主循环 + 事件推送
+        while self._agent_state not in (AgentState.COMPLETED, AgentState.FAILED):
+            handle_name = self._HANDLERS.get(self._agent_state)
+            if not handle_name:
+                yield {"event": "status", "data": "处理中"}
+                break
+
+            current_state = self._agent_state
+
+            # 推送阶段状态
+            status_text = {
+                AgentState.INIT: "初始化中",
+                AgentState.PLANNING: "任务规划中",
+                AgentState.EXECUTING: "执行计划步骤",
+                AgentState.RESULT_PROCESSING: "处理执行结果",
+                AgentState.REFLECTING: "复盘重规划中",
+            }.get(current_state, "处理中")
+            yield {"event": "status", "data": status_text}
+
+            # 执行状态逻辑
+            next_state = getattr(self, handle_name)()
+            self._transition(next_state)
+
+            # 规划完成：推送计划
+            if current_state == AgentState.PLANNING and self._plan:
+                # 格式化成前端易读的步骤列表
+                step_list = [
+                    {"index": i + 1, "desc": s.description, "status": s.status.value}
+                    for i, s in enumerate(self._plan.steps)
+                ]
+                yield {"event": "plan", "data": {"steps": step_list}}
+
+        # 3. 终态：流式输出最终答案
+        if self._agent_state == AgentState.COMPLETED:
+            yield {"event": "status", "data": "生成最终回答"}
+
+            # 组装汇总上下文
+            done_steps = [f"{s.description}：{s.result}" for s in self._plan.steps if s.status == StepStatus.DONE]
+            summary_msgs = [
+                {"role": "system", "content": "把步骤结果整合成通顺的最终回答，不要罗列步骤"},
+                {"role": "user", "content": f"需求：{self._query}\n步骤结果：\n" + "\n".join(done_steps)}
+            ]
+
+            # 逐字推送
+            full_answer = ""
+            for delta in self.llm_client.chat_completion_stream(
+                    model=agent_conf["chat_model"],
+                    messages=summary_msgs
+            ):
+                full_answer += delta
+                yield {"event": "content", "data": delta}
+
+            self._final_answer = full_answer
+            self._plan.final_answer = full_answer
+        else:
+            self._handle_failed()
+            yield {"event": "content", "data": self._final_answer}
+
+        # 4. 收尾
+        self._finalize(self._final_answer)
+        yield {"event": "done", "data": ""}
+
     # ===================== 辅助方法 =====================
     @staticmethod
     def _print_plan(plan: Plan) -> None:
