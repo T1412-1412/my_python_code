@@ -53,15 +53,19 @@ class LLMClient:
                 stream=True
             )
             for chunk in stream:
-                # ========== 第一层防御：choices 非空才继续 ==========
-                if not chunk.choices:
-                    continue  # 空帧直接跳过，避免索引越界
-
-                delta = chunk.choices[0].delta
-
-                # ========== 第二层防御：content 有值才返回 ==========
-                if delta.content is not None and delta.content != "":
-                    yield delta.content
+                # 第一层：choices 数组为空，直接跳过（结束帧/控制帧）
+                if not hasattr(chunk, "choices") or not chunk.choices:
+                    continue
+                choice = chunk.choices[0]
+                # 第二层：没有delta字段，跳过
+                if not hasattr(choice, "delta") or choice.delta is None:
+                    continue
+                # 第三层：content 为空，跳过
+                content = choice.delta.content
+                if content is None or content == "":
+                    continue
+                # 有有效内容才返回
+                yield content
 
         except Exception as e:
             logger.error(f"流式生成失败：{e}", exc_info=True)
