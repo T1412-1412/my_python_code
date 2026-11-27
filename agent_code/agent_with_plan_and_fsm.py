@@ -544,10 +544,7 @@ class PlanAgent:
         self._query = query
         pushed_step_ids = set()  # 已推送的步骤ID，去重，就在这里初始化
 
-        # ========== 1. 初始化/断点恢复 ==========
-        # 记录已经推送过的步骤ID，避免重复推送（就在这里初始化，不用别处加）
-        self._pushed_step_ids = set()
-
+        # 1. 初始化/断点恢复
         resumed = False
         if resume:
             resumed = self.load_checkpoint()
