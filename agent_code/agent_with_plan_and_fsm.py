@@ -630,6 +630,7 @@ class PlanAgent:
             self._final_answer = full_answer
             self._plan.final_answer = full_answer
         else:
+            # 失败兜底
             self._handle_failed()
             yield {"event": "content", "data": self._final_answer}
 
