@@ -87,6 +87,14 @@ def _summarize_result(llm: LLMClient, plan: Plan) -> str:
         logger.warning(f"汇总失败，降级拼接：{e}")
         return "\n".join(done_steps)
 
+def _truncate_text(text: str, max_len: int = 200) -> str:
+    """工具函数：步骤结果截断，避免单条事件过大"""
+    if not text:
+        return ""
+    if len(text) <= max_len:
+        return text
+    return text[:max_len] + "..."
+
 # ==============================================
 # 第三部分：Agent 主体
 # ==============================================
