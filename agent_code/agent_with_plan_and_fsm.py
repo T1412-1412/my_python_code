@@ -538,8 +538,8 @@ class PlanAgent:
     # 流式输出的run方法
     def run_stream(self, query: str, resume: bool = True):
         """
-        面试版流式运行：只做核心事件推送
-        事件类型：status / plan / content / done
+        面试版流式运行入口
+        事件类型：status / plan / step / content / done
         """
         self._query = query
 
