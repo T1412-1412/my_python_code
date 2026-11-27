@@ -38,6 +38,7 @@ app = FastAPI(
     title="智能 Agent 服务 API",
     description="基于 Plan-and-Execute + FSM 的智能 Agent 服务接口文档",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # ===================== 配置 CORS 跨域 =====================
