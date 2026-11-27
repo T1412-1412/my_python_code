@@ -155,3 +155,18 @@ def chat_stream(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"}
     )
+
+# 获取所有会话列表
+@router.get("/sessions", response_model=ApiResponse)
+def list_sessions(session_manager: SessionManager = Depends(get_session_manager)):
+    """获取所有历史会话列表，按最后活跃时间倒序"""
+    try:
+        sessions = session_manager.list_sessions()
+        return ApiResponse(
+            code=0,
+            message="success",
+            data={"total": len(sessions), "items": sessions}
+        )
+    except Exception as e:
+        logger.error(f"获取会话列表失败：{e}")
+        raise HTTPException(status_code=500, detail=str(e))
