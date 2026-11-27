@@ -588,7 +588,23 @@ class PlanAgent:
                 ]
                 yield {"event": "plan", "data": {"steps": step_list}}
 
-        # 3. 终态：流式输出最终答案
+            # ===== 执行阶段：推送新完成的步骤（核心，带去重）=====
+            if current_state == AgentState.EXECUTING and self._plan:
+                for step in self._plan.steps:
+                    # 只推：状态是已完成 + 从来没推送过的步骤
+                    if step.status == StepStatus.DONE and step.step_id not in self._pushed_step_ids:
+                        yield {
+                            "event": "step",
+                            "data": {
+                                "step_id": step.step_id,
+                                "description": step.description,
+                                "summary": _truncate_text(step.result, 150)
+                            }
+                        }
+                        # 标记为已推送，下次不会再推
+                        self._pushed_step_ids.add(step.step_id)
+
+        # ========== 3. 终态：流式输出最终答案 ==========
         if self._agent_state == AgentState.COMPLETED:
             yield {"event": "status", "data": "生成最终回答"}
 
