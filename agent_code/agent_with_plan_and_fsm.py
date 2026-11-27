@@ -549,6 +549,9 @@ class PlanAgent:
             resumed = self.load_checkpoint()
         if not resumed:
             self._agent_state = AgentState.INIT
+            self._plan = None
+            self._final_answer = ""
+            self._session_log = []
 
         # 2. 状态机主循环 + 事件推送
         while self._agent_state not in (AgentState.COMPLETED, AgentState.FAILED):
