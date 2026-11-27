@@ -581,7 +581,6 @@ class PlanAgent:
 
             # ===== 规划完成：推送完整计划 =====
             if current_state == AgentState.PLANNING and self._plan:
-                # 格式化成前端易读的步骤列表
                 step_list = [
                     {"index": i + 1, "desc": s.description, "status": s.status.value}
                     for i, s in enumerate(self._plan.steps)
