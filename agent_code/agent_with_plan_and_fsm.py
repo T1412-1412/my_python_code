@@ -600,7 +600,7 @@ class PlanAgent:
                         yield {
                             "event": "step",
                             "data": {
-                                "step_id": step.step_id,
+                                "index": step_index,
                                 "description": step.description,
                                 "summary": _truncate_text(step.result, 150)
                             }
