@@ -639,12 +639,7 @@ class PlanAgent:
         if self._agent_state == AgentState.COMPLETED:
             yield {"event": "status", "data": "生成最终回答"}
 
-            # 组装汇总上下文
-            done_steps = [
-                f"{s.description}：{s.result}"
-                for s in self._plan.steps
-                if s.status == StepStatus.DONE
-            ]
+            done_steps = [f"{s.description}：{s.result}" for s in self._plan.steps if s.status == StepStatus.DONE]
             summary_msgs = [
                 {"role": "system", "content": "把步骤结果整合成通顺的最终回答，不要罗列步骤"},
                 {"role": "user", "content": f"需求：{self._query}\n步骤结果：\n" + "\n".join(done_steps)}
