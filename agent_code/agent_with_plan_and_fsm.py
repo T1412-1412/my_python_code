@@ -572,13 +572,13 @@ class PlanAgent:
                 next_state = getattr(self, handle_name)()
                 self._transition(next_state)
 
-            # ===== 规划完成：推送完整计划 =====
-            if current_state == AgentState.PLANNING and self._plan:
-                step_list = [
-                    {"index": i + 1, "desc": s.description, "status": s.status.value}
-                    for i, s in enumerate(self._plan.steps)
-                ]
-                yield {"event": "plan", "data": {"steps": step_list}}
+                # 规划完成，推送步骤清单
+                if self._plan:
+                    step_list = [
+                        {"index": i + 1, "desc": s.description, "done": False}
+                        for i, s in enumerate(self._plan.steps)
+                    ]
+                    yield {"event": "plan", "data": {"steps": step_list}}
 
             # ===== 执行阶段：推送新完成的步骤（核心，带去重）=====
             if current_state == AgentState.EXECUTING and self._plan:
