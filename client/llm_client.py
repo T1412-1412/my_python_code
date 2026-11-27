@@ -33,9 +33,17 @@ class LLMClient:
             logger.error(f"模型调用异常：{e}", exc_info=True)
             raise
 
-    # client/llm_client.py 追加方法
-    def chat_completion_stream(self, model: str, messages: list, temperature: float = 0):
-        """最简流式调用：只用于最终答案生成，纯文本场景"""
+    # 流式响应
+    def chat_completion_stream(
+            self,
+            model: str,
+            messages: list,
+            temperature: float = 0
+    ):
+        """
+        流式调用：逐块返回文本增量
+        增加空帧防御，兼容不同模型的流式响应格式
+        """
         logger.info("开始流式生成最终答案")
         try:
             stream = self.client.chat.completions.create(
