@@ -1,8 +1,6 @@
 # 导入知识库管理器（全局单例）
 from rag_knowledge.kb_singleton import get_global_kb_manager
 
-# 全局单例，避免重复初始化
-_kb_manager = KnowledgeBaseManager()
 
 def search_knowledge_base(kb_name: str, query: str, top_k: int = 3) -> str:
     """

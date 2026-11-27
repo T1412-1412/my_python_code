@@ -1,6 +1,6 @@
 # 大模型基础url和模型名称
 base_url: https://ws-75ntouay5nt8xgfs.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
-chat_model: qwen3.8-flash
+chat_model: qwen3.8-max-0902
 #base_url: https://open.bigmodel.cn/api/paas/v4
 #chat_model: GLM-4.7-Flash
 # 对应模型的tiktoken编码

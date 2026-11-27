@@ -11,6 +11,16 @@ from rag_knowledge.vector_store import VectorStore
 from client.embedding_client import EmbeddingClient
 from utils.logger_tool import logger
 from utils.path_tool import get_abs_path
+import re
+from typing import Optional
+
+# 知识库名称规则：小写字母开头，3-63 位，允许小写字母/数字/下划线
+# 强制比 ChromaDB 的约束更严，保证"用户能建的名字，一定能被 ChromaDB 接受"
+_KB_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]{2,62}$")
+
+
+def _is_valid_kb_name(name: str) -> bool:
+    return bool(_KB_NAME_PATTERN.match(name))
 
 
 class KnowledgeBaseManager:
@@ -45,10 +55,24 @@ class KnowledgeBaseManager:
         self._store_cache: Dict[str, VectorStore] = {}
         logger.info("知识库管理器初始化完成")
 
-    def _get_store(self, kb_name: str) -> VectorStore:
-        """获取指定知识库的向量存储实例，懒加载+缓存"""
+    def _get_store(self, kb_name: str, create_if_not_exists: bool = True) -> Optional[VectorStore]:
+        """
+        获取指定知识库的向量存储实例，懒加载+缓存
+        :param create_if_not_exists: 不存在时是否自动创建，检索时传False，上传时传True
+        """
+        # ★ 补强 1：格式校验放在最前面，非法名不触发任何文件系统操作
+        #    中文残留目录（设备采购/采购方案）在入口就被拦截，不会走到 VectorStore
+        if not _is_valid_kb_name(kb_name):
+            logger.warning(f"知识库名称不合法，拒绝访问：{kb_name!r}")
+            return None
         if kb_name not in self._store_cache:
             persist_dir = os.path.join(self.base_persist_dir, kb_name)
+
+            # ★ 补强 2：用 isdir 代替 exists，防止同名文件造成误判
+            # 检索场景：目录不存在直接返回 None，不自动创建
+            if not create_if_not_exists and not os.path.isdir(persist_dir):
+                return None
+
             self._store_cache[kb_name] = VectorStore(
                 persist_dir=persist_dir,
                 collection_name=f"kb_{kb_name}",
@@ -63,6 +87,19 @@ class KnowledgeBaseManager:
         :param file_path: 本地文件路径
         :return: 成功添加的分片数量，失败返回0
         """
+        # ★ 补强 3：上传前先做格式校验 + 存在性校验
+        #    知识库的创建应该走显式的 create_kb()（或 API 创建接口），
+        #    而不是"上传时顺带创建"
+        if not _is_valid_kb_name(kb_name):
+            raise ValueError(f"知识库名称不合法：{kb_name!r}")
+        if not os.path.isdir(os.path.join(self.base_persist_dir, kb_name)):
+            raise FileNotFoundError(
+                f"知识库 '{kb_name}' 不存在，请先通过创建接口创建"
+            )
+
+        store = self._get_store(kb_name, create_if_not_exists=False)
+        if store is None:
+            raise FileNotFoundError(f"知识库 '{kb_name}' 无法打开")
         # 1. 加载文档提取纯文本
         text = DocumentLoader.load_file(file_path)
         if not text:
@@ -107,6 +144,11 @@ class KnowledgeBaseManager:
         :return: 相关片段列表，包含内容、来源、相似度
         """
         store = self._get_store(kb_name)
+        # ★ 用 is None 显式判断，虽然 VectorStore 没有 __bool__，
+        #   但显式写法更防御，未来加 __len__ 也不会改变语义
+        if store is None:
+            logger.warning(f"知识库 [{kb_name}] 不存在，无法检索")
+            return []
 
         # 1. 查询向量化
         query_vec = self.embedding_client.embedding_completion(query)
