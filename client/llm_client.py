@@ -32,3 +32,22 @@ class LLMClient:
         except Exception as e:
             logger.error(f"模型调用异常：{e}", exc_info=True)
             raise
+
+    # client/llm_client.py 追加方法
+    def chat_completion_stream(self, model: str, messages: list, temperature: float = 0):
+        """最简流式调用：只用于最终答案生成，纯文本场景"""
+        logger.info("开始流式生成最终答案")
+        try:
+            stream = self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                stream=True
+            )
+            for chunk in stream:
+                delta = chunk.choices[0].delta.content
+                if delta:
+                    yield delta
+        except Exception as e:
+            logger.error(f"流式生成失败：{e}")
+            yield f"\n[生成异常：{str(e)}]"
