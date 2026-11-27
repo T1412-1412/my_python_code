@@ -605,8 +605,25 @@ class PlanAgent:
                                 "summary": _truncate_text(step.result, 150)
                             }
                         }
-                        # 标记为已推送，下次不会再推
-                        self._pushed_step_ids.add(step.step_id)
+                        pushed_step_ids.add(step.step_id)
+
+                # 跳转到结果处理状态
+                next_state = AgentState.RESULT_PROCESSING
+                self._transition(next_state)
+
+            elif current_state == AgentState.REFLECTING:
+                # 重规划阶段
+                yield {"event": "status", "data": "执行失败，复盘重规划中"}
+                next_state = getattr(self, handle_name)()
+                self._transition(next_state)
+
+                # 重规划完成后，推送新的步骤清单
+                if self._plan:
+                    step_list = [
+                        {"index": i + 1, "desc": s.description, "done": s.status == StepStatus.DONE}
+                        for i, s in enumerate(self._plan.steps)
+                    ]
+                    yield {"event": "plan", "data": {"steps": step_list}}
 
         # ========== 3. 终态：流式输出最终答案 ==========
         if self._agent_state == AgentState.COMPLETED:
