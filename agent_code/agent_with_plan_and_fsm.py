@@ -661,7 +661,7 @@ class PlanAgent:
             self._handle_failed()
             yield {"event": "content", "data": self._final_answer}
 
-        # ========== 4. 收尾刷盘 ==========
+        # 4. 收尾
         self._finalize(self._final_answer)
         yield {"event": "done", "data": ""}
 
