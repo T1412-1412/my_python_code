@@ -542,6 +542,7 @@ class PlanAgent:
         事件顺序：status(规划中) → plan(步骤清单) → status(执行第X步) → step(第X步完成) → ... → content(逐字答案) → done
         """
         self._query = query
+        pushed_step_ids = set()  # 已推送的步骤ID，去重，就在这里初始化
 
         # ========== 1. 初始化/断点恢复 ==========
         # 记录已经推送过的步骤ID，避免重复推送（就在这里初始化，不用别处加）
