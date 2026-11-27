@@ -575,7 +575,7 @@ class PlanAgent:
             }.get(current_state, "处理中")
             yield {"event": "status", "data": status_text}
 
-            # 执行状态逻辑
+            # 执行当前状态的逻辑
             next_state = getattr(self, handle_name)()
             self._transition(next_state)
 
