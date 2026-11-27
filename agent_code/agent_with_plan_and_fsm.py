@@ -645,7 +645,6 @@ class PlanAgent:
                 {"role": "user", "content": f"需求：{self._query}\n步骤结果：\n" + "\n".join(done_steps)}
             ]
 
-            # 逐字推送最终答案
             full_answer = ""
             for delta in self.llm_client.chat_completion_stream(
                     model=agent_conf["chat_model"],
