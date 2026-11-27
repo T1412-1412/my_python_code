@@ -556,7 +556,7 @@ class PlanAgent:
             self._final_answer = ""
             self._session_log = []
 
-        # 2. 状态机主循环 + 事件推送
+        # ========== 2. 状态机主循环 + 事件推送 ==========
         while self._agent_state not in (AgentState.COMPLETED, AgentState.FAILED):
             handle_name = self._HANDLERS.get(self._agent_state)
             if not handle_name:
