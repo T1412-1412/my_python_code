@@ -580,11 +580,23 @@ class PlanAgent:
                     ]
                     yield {"event": "plan", "data": {"steps": step_list}}
 
-            # ===== 执行阶段：推送新完成的步骤（核心，带去重）=====
-            if current_state == AgentState.EXECUTING and self._plan:
-                for step in self._plan.steps:
-                    # 只推：状态是已完成 + 从来没推送过的步骤
-                    if step.status == StepStatus.DONE and step.step_id not in self._pushed_step_ids:
+            elif current_state == AgentState.EXECUTING:
+                # 执行阶段：逐步骤执行，每步单独推送状态+完成事件
+                # 注意：这里不直接调用_handle_executing一次性跑完，而是手动驱动单步
+                ready_steps = self._plan.get_ready_step()
+                for step in ready_steps:
+                    if step.status != StepStatus.PENDING:
+                        continue
+
+                    # 推送「开始执行第X步」的状态
+                    step_index = self._plan.steps.index(step) + 1
+                    yield {"event": "status", "data": f"执行第 {step_index} 步：{step.description[:20]}..."}
+
+                    # 执行这一步
+                    self.executor.execute_step(self._plan, step)
+
+                    # 步骤完成，推送 step 事件
+                    if step.status == StepStatus.DONE and step.step_id not in pushed_step_ids:
                         yield {
                             "event": "step",
                             "data": {
